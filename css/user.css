@@ -1,0 +1,24 @@
+.user li{
+  list-style: none;
+  margin-right: 10px;
+}
+.user li a{
+  text-decoration: none;
+  font-size: 16px;
+}
+#myTabContent .card{
+  float: left;
+  margin: 10px;
+}
+.user{
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+}
+
+#myTabContent button{
+  margin: 10px;
+}
+.card img{
+  height: 200px;
+}

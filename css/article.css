@@ -1,0 +1,37 @@
+.article-option .btn-left{
+  float: left;
+}
+.article-option .btn-left button{
+  margin: 10px;
+}
+.demo{
+  text-align: center;
+}
+.btn-right{
+  float: right;
+  width: 700px;
+}
+.btn-right input{
+  width: 120px;
+  display: inline-block;
+}
+.btn-right button{
+  display: inline-block;
+  margin: 10px;
+}
+#keyWords{
+  width: 150px;
+  margin: 0 10px;
+}
+.w-e-toolbar li{
+  list-style: none;
+}
+.article{
+  overflow: auto;
+  height: 100%;
+  width: 100%;
+}
+#bigImageModal img{
+  display: inline-block;
+  width: 100%;
+}

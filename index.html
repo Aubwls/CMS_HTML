@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>看点咨询精选</title>
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1810519_xrjds2v22u.css">
+  <link rel="stylesheet" href="./css/category.css">
+  <link rel="stylesheet" href="./css/article.css">
+  <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/zTree_v3/css/demo.css" type="text/css">
+  <link rel="stylesheet" href="./css/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+  <link rel="stylesheet" href="./css/jquery.sPage.css">
+  <link rel="stylesheet" href="./css/foundation-datepicker.css">
+  <link rel="stylesheet" href="http://www.jq22.com/jquery/font-awesome.4.6.0.css">
+  <link rel="stylesheet" href="./css/FraUpload.css">
+  <link rel="stylesheet" href="./css/user.css">
+  <link rel="stylesheet" href="./css/comment.css">
+  <link rel="stylesheet" href="./css/home.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">  
+
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="./js/index.js"></script>
+  <script src="./js/ajax.js"></script>
+  <script src="./css/zTree_v3/js/jquery.ztree.core.min.js"></script>
+  <script src="./js/jquery.sPage.js"></script>
+  <script src="./js/foundation-datepicker.js"></script>
+  <script src="./js/locales/foundation-datepicker.zh-CN.js"></script>
+  <script src="./js/FraUpload.js"></script>
+  <script src="./js/Sortable/Sortable.js"></script>
+  <script src="./js/MD5.js"></script>
+  <script src="./js/wangEditor.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/4.7.0/echarts.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>  
+  
+  <script>
+    $(function(){
+      var token = localStorage.getItem('token');
+      myAjax('/manager/user/info','get',{token:token},function(res){
+        $('#userface').prop('src',res.data.userface);
+      })
+    })
+  </script>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- 页面左侧 -->
+    <div class="left">
+      <!-- 左侧头部 -->
+      <div class="left-header">
+        <img src="./images/logo.png" alt="">
+        <span>看 点 咨 询</span>
+      </div>
+      <!-- 左侧导航 -->
+      <div class="left-nav">
+        <ul>
+          <li><i class="iconfont icon-iconfontzhizuobiaozhun023101"></i>首页</li>
+          <li><i class="iconfont icon-lanmu"></i>栏目管理</li>
+          <li><i class="iconfont icon-wenzhang-copy"></i>文章管理</li>
+          <li><i class="iconfont icon-yonghu"></i>用户管理</li>
+          <li><i class="iconfont icon-pinglun"></i>评论管理</li>
+        </ul>
+      </div>
+    </div>
+    <!-- 页面右侧 -->
+    <div class="right"> 
+      <!-- 右侧头部 -->
+      <div class="right-header">
+        <img id="userface" src="./images/qq.jpg" alt="">
+      </div>
+      <!-- 右侧内容 -->
+      <div class="right-content">
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

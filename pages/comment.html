@@ -1,0 +1,182 @@
+<div  class="comment">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#set" role="tab" aria-controls="home" aria-selected="true">评论设置</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#list" role="tab" aria-controls="profile" aria-selected="false">评论列表</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="set" role="tabpanel" aria-labelledby="home-tab">
+      <table class='table table-bordered'>
+        <thead>
+          <tr>
+            <th style="text-align: center;">编号</th>
+            <th style="text-align: center;">文章标题</th>
+            <th style="text-align: center;">所属栏目</th>
+            <th style="text-align: center;">作者</th>
+            <th style="text-align: center;">发布时间</th>
+            <th style="text-align: center;">阅读次数</th>
+            <th style="text-align: center;">操作</th>
+          </tr>
+        </thead>
+        <tbody class="set-content">
+          
+        </tbody>
+      </table>
+      <div id="myPage1" class="demo"></div>
+    </div>
+    
+    <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="profile-tab">
+      <table class='table table-bordered'>
+        <thead>
+          <tr>
+            <th style="text-align: center;">编号</th>
+            <th style="text-align: center;">所属文章</th>
+            <th style="text-align: center;">评论内容</th>
+            <th style="text-align: center;">评论者</th>
+            <th style="text-align: center;">评论时间</th>
+            <th style="text-align: center;">状态</th>
+            <th style="text-align: center;">操作</th>
+          </tr>
+        </thead>
+        <tbody class="list-content">
+          
+        </tbody>
+      </table>
+      <div id="myPage2" class="demo"></div>
+    </div>
+  </div>
+</div>
+<script>  
+    $(function(){  
+        /* 初始化控件 */  
+        $(".status").bootstrapSwitch({  
+            onText : "ON",      // 设置ON文本  
+            offText : "OFF",    // 设置OFF文本  
+            onColor : "success",// 设置ON文本颜色     (info/success/warning/danger/primary)  
+            offColor : "info",  // 设置OFF文本颜色        (info/success/warning/danger/primary)  
+            size : "mini",    // 设置控件大小,从小到大  (mini/small/normal/large)  
+            // 当开关状态改变时触发  
+            onSwitchChange : function(event, state) {  
+              if (state == true) {  
+                  alert("ON");  
+              } else {  
+                  alert("OFF");  
+              }  
+            }  
+        });  
+    });  
+</script>
+<script> 
+
+  $('.table').on('click','.deleteBtn',function(){
+    var id = $(this).closest('tr').find('input').val();
+    myAjax('/manager/comment/deleteCommentById','get',{id:id},function(res){
+      if (res.status == 200 ){
+       alert('删除成功！');
+      }else{
+        alert('删除成功！');
+      }
+      findAllComment(1);
+    })
+  })
+  $('.table').on('click','.changeStatus',function(){
+    var id = $(this).closest('tr').find('input').val();
+    myAjax('/manager/comment/checkComment','get',{id:id,status:'审核通过'},function(res){
+      if (res.status == 200 ){
+        alert('审核成功！');
+      }else{
+        alert('已经审核！');
+      }
+      findAllComment(1);
+    })
+  })
+  findAllComment(1);
+  function findAllComment(page){
+    var AllCategory;
+    myAjax('/manager/category/findAllCategory','get',{},function(res){
+      AllCategory = res.data;
+    })
+    var AllUser;
+    myAjax('/manager/user/findAllUser','get',{},function(res){
+      AllUser = res.data;
+    })
+    myAjax('/manager/comment/findComment','get',{page:page-1,pageSize:10},function(res){
+      $('.set-content').empty();
+      $('.list-content').empty();
+      res.data.list.forEach(function(item){
+        if (item.article != null){
+          var categoryName = AllCategory.filter(function(it){
+            return it.id == item.article.categoryId;
+          })[0].name;
+          var author = AllUser.filter(function(it2){
+            return item.article.userId == it2.id
+          })[0];
+        }
+        var newTbody = $(`
+          <tr>
+            <td><input type="checkbox" value="`+item.id+`"></td>
+            <td>`+(item.article == null ? '----': item.article.title)+`</td>
+            <td>`+(item.article == null ? '----': categoryName)+`</td>
+            <td>`+(item.article == null ? '----': author.username)+`</td>
+            <td>`+(item.article == null ? '----': item.article.publishtime)+`</td>
+            <td>`+(item.article == null ? '----': item.article.readtimes)+`</td>
+            <td style="text-align:center;">
+              <span class="changeStatus">
+              `+
+              (item.status == '审核通过' ? '审核通过':'<button class="btn btn-info">审核</button>')
+              +`
+              </span>
+            </td>
+          </tr>
+        `)
+        author = null;
+        var newTbody2 = $(`
+          <tr>
+            <td><input type="checkbox" value="`+item.id+`"></td>
+            <td>`+(item.article == null ? '----': item.article.title)+`</td>
+            <td>`+(item.content == null ? '----': item.content)+`</td>
+            <td>`+(item.customer == null ? '----': item.customer.nickname)+`</td>
+            <td>`+(item.commenttime == null ? '----': item.commenttime)+`</td>
+            <td style="text-align:center;">
+              <span class="changeStatus">
+              `+
+              (item.status == '审核通过' ? '已通过':'<button class="btn btn-info">通过</button>')
+              +`
+              </span>
+            </td>
+            <td>
+              <span><i class="iconfont icon-shanchu deleteBtn" title="删除" ></i></span> 
+            </td>
+          </tr>
+        `)
+        $('.set-content').append(newTbody);
+        $('.list-content').append(newTbody2);
+      })
+      res.data.page+=1;
+      $("#myPage1").sPage({
+          page:res.data.page,
+          pageSize:res.data.pageSize,
+          total:res.data.total,
+          prevPage:"←",
+          nextPage:"→",
+          backFun:function(page){
+            findAllComment(page);
+          }
+      });
+      $("#myPage2").sPage({
+          page:res.data.page,
+          pageSize:res.data.pageSize,
+          total:res.data.total,
+          prevPage:"←",
+          nextPage:"→",
+          backFun:function(page){
+            findAllComment(page);
+          }
+      });
+    })
+  }
+  
+</script>

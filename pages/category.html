@@ -1,0 +1,205 @@
+<!-- 栏目管理 -->
+<div class="category">
+  <!-- 树形结构 -->
+  <div class="category-tree">
+    <!-- 使用ztree插件的树形结构 -->
+    <ul id="category-tree" class="ztree"></ul>
+  </div>
+  <!-- 内容 -->
+  <div class="category-content">
+    <div class="category-option">
+      <button class="btn btn-primary" id='addBtn'>新增</button>
+      <button class="btn btn-danger" id='batchBtn'>批量删除</button>
+    </div>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>栏目名称</th>
+          <th>栏目描述</th>
+          <th>父栏目</th>
+          <th style="text-align:center;">操作</th>
+        </tr>
+      </thead>
+      <tbody class="tbody-content">
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 模态框 -->
+  <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalLabel">新增栏目</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="categoryName">栏目名称</label>
+              <input type="email" class="form-control" id="categoryName" aria-describedby="emailHelp">
+            </div>
+            <div class="form-group">
+              <label for="categoryParent">父栏目</label>
+              <select name="" id="categoryParent" class="form-control">
+    
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="categoryComment">栏目描述</label>
+              <textarea name="" id="categoryComment" cols="10" rows="5" class="form-control">
+
+              </textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+          <button type="button" class="btn btn-primary" id="categroySave">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var allData = null;
+  var id = null;;
+  // 查询所有的栏目，显示到表格
+  findAllCategory();
+  function findAllCategory(){
+    myAjax('/manager/category/findAllCategory','get',{},function(res){
+      allData = res.data;
+      // 清空表格数据
+      $('.tbody-content').empty();
+      // 将数据遍历到表格中去
+      res.data.forEach(function(item){
+        var parent = item.parent;
+        var newTr = $(`
+        <tr>
+          <td><input type="checkbox" value="`+item.id+`"></td>
+          <td>`+item.name+`</td>
+          <td>`+item.comment+`</td>
+          <td>`+(parent == null? '----': parent.name)+`</td>
+          <td style="text-align:center;">
+            <span><i class="iconfont icon-xiugai1 updateBtn" title="修改" ></i></span>
+            <span><i class="iconfont icon-shanchu deleteBtn" title="删除" ></i></span> 
+          </td>
+        </tr>
+        `)
+        $('.tbody-content').append(newTr);
+      })
+      // 将数据遍历到树形图
+      var parents = res.data.filter(function(item){
+        return !item.parent;
+      })
+      parents.forEach(function(item){
+        item.children = res.data.filter(function(it){
+          if (it.parent){
+            return item.id == it.parent.id;
+          }
+        })
+      })
+      parents[0].open = true;
+      $.fn.zTree.init($("#category-tree"), {view: {showIcon: false}},parents);
+      res.data.forEach(function(item){
+        var newOption = $(`
+          <option value="`+item.id+`">`+item.name+`</option>
+        `)
+        $('#categoryParent').append(newOption);
+      })
+    })
+
+
+  }
+  // 新增按钮事件
+  $('#addBtn').click(function(){
+    $('#categoryName').val('');
+    $('#categoryParent').val('');
+    $('#categoryComment').val('');
+    $('#categoryModalLabel').text("新增栏目");
+    $('#categoryModal').modal('show');
+  })
+  // 保存
+  $('#categroySave').click(function(){
+    var name = $('#categoryName').val();
+    var parentId = $('#categoryParent').val();
+    var comment = $('#categoryComment').val();
+    if(name != null && comment != null) {
+      if (id != null){
+        var data = {
+          id:id,
+          name:name,
+          comment:comment,
+          no:null,
+          parentId,parentId
+        };
+      }else{
+        var data = {
+          name:name,
+          comment:comment,
+          no:null,
+          parentId,parentId
+        }
+      }
+      myAjax('/manager/category/saveOrUpdateCategory','post',data,function(res){
+          alert(res.message);
+          findAllCategory();
+          $('#categoryModal').modal('hide');
+          id = null;
+      })
+    }else{
+      alert('父栏目或者描述信息不能为空！');
+    }
+  })
+  // 修改
+  $('.table').on('click','.updateBtn',function(){
+    id = $(this).closest('tr').find('[type="checkbox"]').val();
+    $('#categoryModalLabel').text("修改栏目");
+    console.log(allData);
+    allData.forEach(function(item){
+      if(item.id == id){
+        $('#categoryName').val(item.name);
+        $('#categoryParent').val((item.parent == null? '': item.parent.id));
+        $('#categoryComment').val(item.comment);
+      }
+    })
+    $('#categoryModal').modal('show');
+  })
+  //删除
+  $('.table').on('click','.deleteBtn',function(){
+    var id = $(this).closest('tr').find('[type="checkbox"]').val();
+    var result = confirm('是否确认删除?');
+    if(result){
+      myAjax('/manager/category/deleteCategoryById','get',{id,id},function(res){
+        if (res.status == 200 ){
+          alert("删除成功！")
+        }else{
+          alert("删除失败！")
+        }
+        findAllCategory();
+      });
+    }
+  })
+
+  // 批量删除
+  $('#batchBtn').click(function(){
+    var arr = [];
+    Array.from($(':checkbox:checked')).forEach(function(item){
+      arr.push(item.value);
+    })
+    var result = confirm('是否确认删除?');
+    if(result){
+      myAjax('/manager/category/batchDeleteCategory','post',{ids:arr.toString()},function(res){
+        if (res.status == 200 ){
+          alert("删除成功！")
+        }else{
+          alert("删除失败！")
+        }
+        findAllCategory();
+      });
+    }
+  })
+</script>

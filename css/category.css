@@ -1,0 +1,35 @@
+.category{
+  height: 100%;
+}
+.category .category-tree{
+  width: 13%;
+  height: 100%;
+  float: left;
+}
+#category-tree{
+  width: 100%;
+}
+.category .category-content{
+  height: 100%;
+  width: 85%;
+  float: right;
+  overflow: auto;
+}
+.category-content .category-option button{
+  margin: 10px;
+}
+.category-tree .ztree{
+  height: 100% !important;
+  margin-top: 0;
+  border: none;
+  background: #fff !important;
+}
+.category-tree .ztree li span{
+  font-size: 16px;
+}
+/* .ztree{
+  height: 100% !important;
+  margin-top: 0;
+  border: 0 !important;
+  background: #fff !important;
+} */
